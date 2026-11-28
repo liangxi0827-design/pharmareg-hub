@@ -1,0 +1,52 @@
+name: Daily data sync
+
+# 每天自动刷新 GitHub Pages 上的监管动态,并在 data/meta.json 记录:
+#   updatedAt 数据真正变化的时间 / checkedAt 最近检查时间 / cde.updatedAt CDE 快照时间(由分享者电脑同步)
+# 这样任何人打开网页,顶部都能看到「数据更新至 …」。
+on:
+  schedule:
+    # 02:00 UTC = 北京时间 10:00(避开分享者电脑 08:30 的本地同步)
+    - cron: '0 2 * * *'
+    # 补偿:GitHub 的定时任务偶发延迟/跳过,每天再多触发两次(没有变化不会提交)
+    - cron: '0 6 * * *'
+    - cron: '0 10 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-data-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Refresh official regulatory news
+        run: node scripts/daily-sync.mjs
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/meta.json data/hub.json
+          if git diff --cached --quiet; then
+            echo "没有变化(已记录 checkedAt)"
+          else
+            git commit -m "daily sync: $(date -u +%Y-%m-%dT%H:%MZ)"
+            for i in 1 2 3; do
+              if git push; then echo "pushed"; break; fi
+              echo "push 失败,尝试同步远端后重试($i)"; git pull --rebase --autostash || true; sleep 5
+            done
+          fi
