@@ -1,6 +1,6 @@
 {
  "updatedAt": "2026-11-28T05:20:38.698Z",
- "checkedAt": "2026-11-28T05:20:38.698Z",
+ "checkedAt": "2026-11-28T09:42:11.644Z",
  "dataSha": "7e32f2f7fb4edfc77184b132c96c8ad4503d8be7",
  "cde": {
   "updatedAt": "2026-11-28T05:20:07.609Z",
@@ -16,5 +16,40 @@
   "updatedAt": "2026-11-28T05:20:38.698Z",
   "file": "hub.json"
  },
- "engine": "local-sync"
+ "news": {
+  "updatedAt": "2026-11-28T09:42:11.644Z",
+  "items": 192,
+  "added": 0,
+  "lastSync": "2026-11-28T05:20:13.351Z"
+ },
+ "sources": [
+  {
+   "id": "fda-press",
+   "ok": false,
+   "code": 404,
+   "count": 0,
+   "msg": "HTTP 404 或页面结构变化"
+  },
+  {
+   "id": "nmpa-ggtg",
+   "ok": false,
+   "code": 412,
+   "count": 0,
+   "msg": "HTTP 412 或页面结构变化"
+  },
+  {
+   "id": "mhra-atom",
+   "ok": true,
+   "code": 200,
+   "count": 10
+  },
+  {
+   "id": "who-rss",
+   "ok": true,
+   "code": 200,
+   "count": 6
+  }
+ ],
+ "engine": "github-actions",
+ "site": ""
 }
